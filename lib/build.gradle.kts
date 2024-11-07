@@ -47,3 +47,13 @@ java {
 		languageVersion = JavaLanguageVersion.of(21)
 	}
 }
+
+tasks.jar {
+	manifest {
+		attributes(mapOf(
+			"Premain-Class" to "org.apache.log4j.ReloadAgent",
+			"Implementation-Title" to "Log4JReload",
+			"Implementation-Version" to rootProject.version
+		))
+	}
+}
