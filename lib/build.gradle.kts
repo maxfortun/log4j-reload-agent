@@ -55,15 +55,12 @@ tasks {
 			attributes(mapOf(
 				"Implementation-Title" to rootProject.name,
 				"Implementation-Version" to rootProject.version,
-				"Premain-Class" to "org.apache.log4j.ReloadAgent",
-				"Can-Redefine-Classes" to "true",
-                "Can-Retransform-Classes" to "true",
-                "Can-Set-Native-Method-Prefix" to "true"
+				"Premain-Class" to "org.apache.log4j.ReloadAgent"
 			))
 		}
 	}
 
 	test {
-		jvmArgs("-javaagent:${buildDir}/libs/${rootProject.name}-${rootProject.version}.jar")
+		jvmArgs("-javaagent:${layout.buildDirectory.get()}/libs/${rootProject.name}-${rootProject.version}.jar")
 	}
 }
