@@ -11,7 +11,6 @@ base {
 }
 
 plugins {
-	// Apply the java-library plugin for API and implementation separation.
 	`java-library`
 	`project-report`
 }
@@ -30,16 +29,6 @@ dependencies {
 	implementation(libs.guava)
 
 	implementation("ch.qos.reload4j:reload4j:1.2.25")
-}
-
-testing {
-	suites {
-		// Configure the built-in test suite
-		val test by getting(JvmTestSuite::class) {
-			// Use JUnit Jupiter test framework
-			useJUnitJupiter("5.10.2")
-		}
-	}
 }
 
 // Apply a specific Java toolchain to ease working on different environments.
@@ -62,5 +51,15 @@ tasks {
 
 	test {
 		jvmArgs("-javaagent:${layout.buildDirectory.get()}/libs/${rootProject.name}-${rootProject.version}.jar")
+	}
+}
+
+testing {
+	suites {
+		// Configure the built-in test suite
+		val test by getting(JvmTestSuite::class) {
+			// Use JUnit Jupiter test framework
+			useJUnitJupiter("5.10.2")
+		}
 	}
 }
