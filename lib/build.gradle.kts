@@ -6,10 +6,6 @@
  * This project uses @Incubating APIs which are subject to change.
  */
 
-base {
-	archivesName.set("log4j-reload-agent")
-}
-
 plugins {
 	// Apply the java-library plugin for API and implementation separation.
 	`java-library`
@@ -48,12 +44,20 @@ java {
 	}
 }
 
-tasks.jar {
-	manifest {
-		attributes(mapOf(
-			"Premain-Class" to "org.apache.log4j.ReloadAgent",
-			"Implementation-Title" to "Log4JReload",
-			"Implementation-Version" to rootProject.version
-		))
+tasks {
+	jar {
+		archiveBaseName.set("log4j-reload-agent")
+
+		manifest {
+			attributes(mapOf(
+				"Premain-Class" to "org.apache.log4j.ReloadAgent",
+				"Implementation-Title" to "Log4JReload",
+				"Implementation-Version" to rootProject.version
+			))
+		}
+	}
+
+	test {
+    	jvmArgs("-javaagent:lib/build/libs/"+".jar")
 	}
 }
