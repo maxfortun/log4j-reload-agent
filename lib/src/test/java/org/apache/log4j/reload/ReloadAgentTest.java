@@ -8,8 +8,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import java.net.URL;
-
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
@@ -23,7 +21,7 @@ class ReloadAgentTest {
 	private String propertyName;
 
 	public ReloadAgentTest() throws Exception {
-		file = new File(ReloadAgent.getURL().getFile());
+		file = ReloadAgent.getFile();
 		logger.debug("Waiting for "+file);
 		while (!file.exists()) {
 			Thread.sleep(100);

@@ -7,6 +7,10 @@ import java.lang.instrument.Instrumentation;
 import java.net.URL;
 
 import java.util.concurrent.CountDownLatch;
+import java.util.stream.Stream;
+import java.util.stream.Collectors;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.apache.log4j.LogManager;
@@ -16,26 +20,69 @@ public class ReloadAgent {
 	private static Logger logger = Logger.getLogger(ReloadAgent.class);
 	private static CountDownLatch countDownLatch = new CountDownLatch(1);
 
+	private static Map<String, String> args = new HashMap<>();
+	private static File file = null;
+
 	static {
 		logger.trace("Init latch "+countDownLatch.getCount());
 	}
 
-	public static URL getURL() {
-		String prop = System.getProperty("log4j.configuration");
-		if (null == prop) {
-			prop = "log4j.properties";
-		}
-
-		return ReloadAgent.class.getClassLoader().getResource(prop);
+	public static File getFile() {
+		return file;
 	}
 
-	private static void premainImpl(String args, Instrumentation instrumentation) {
-		URL url = getURL();
+	private static void initArgs(final String stringArgs) {
+		if(null == stringArgs) {
+			return;
+		}
+
+		args.putAll(
+			Stream.of(stringArgs.split(","))
+				.map(String::trim)
+				.filter(stringArg -> !stringArg.isEmpty())
+				.map(stringArg -> stringArg.split("=", 2))
+				.collect(Collectors.toMap(
+					tokens -> tokens[0],
+					tokens -> {
+						if(tokens.length > 1) {
+							return tokens[1];
+						}
+						return "true";
+					}
+				))
+		);
+	}
+
+	private static String getFileName() {
+		String fileName = args.get("file");
+		if(null != fileName) {
+			logger.trace("File name from args: "+fileName);
+			return fileName;
+		}
+
+		fileName = System.getProperty("log4j.configuration");
+		if (null != fileName) {
+			logger.trace("File name from system property log4j.configuration: "+fileName);
+			return fileName;
+		}
+
+		fileName = "log4j.properties";
+		logger.trace("File name from defaults: "+fileName);
+		return fileName;
+	}
+
+	public static void initFile(String args) {
+		URL url = ReloadAgent.class.getClassLoader().getResource(getFileName());
 		if (!url.getProtocol().equalsIgnoreCase("file")) {
 			throw new IllegalArgumentException("Can't watch "+url.toString()+". Not a file.");
 		}
 
-		File file = new File(url.getFile());
+		file = new File(url.getFile());
+	}
+
+	private static void premain(String args, Instrumentation instrumentation) {
+		initArgs(args);
+		initFile(args);
 		logger.info("Watching "+file);
 
 		PropertyConfigurator.configureAndWatch(file.getAbsolutePath(), 5000L);
@@ -44,7 +91,7 @@ public class ReloadAgent {
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 			@Override
 			public void run() {
-				logger.info("Shutting down watching "+url.toString());
+				logger.info("Shutting down watching "+file);
 				LogManager.shutdown();
 			}
 		});
@@ -58,12 +105,5 @@ public class ReloadAgent {
 		countDownLatch.await();
 		logger.trace("Init complete. "+countDownLatch.getCount());
 	}
-
-	public static void premain(String args, Instrumentation instrumentation) {
-		synchronized(ReloadAgent.class) {
-			premainImpl(args, instrumentation);
-		}
-	}
-
 }
 
