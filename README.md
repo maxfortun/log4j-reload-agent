@@ -1,5 +1,5 @@
 # log4j-reload-agent
-Java agent for reloading [log4j 1](https://logging.apache.org/log4j/1.x/) configuration on change without restarting the app.  
+Java agent for reloading [log4j 1](https://logging.apache.org/log4j/1.x/) configuration without restarting the app.  
 
 Some may say that this project comes a day late and a dollar short.  
 I say it is what it is.  
