@@ -4,6 +4,7 @@ import java.io.File;
 
 import java.lang.instrument.Instrumentation;
 
+import java.net.URI;
 import java.net.URL;
 
 import java.util.concurrent.CountDownLatch;
@@ -36,6 +37,8 @@ public class ReloadAgent {
 			return;
 		}
 
+		logger.trace("Init args: "+stringArgs);
+
 		args.putAll(
 			Stream.of(stringArgs.split(","))
 				.map(String::trim)
@@ -56,12 +59,14 @@ public class ReloadAgent {
 	private static String getFileName() {
 		String fileName = args.get("file");
 		if(null != fileName) {
+			fileName = fileName.replaceAll("^[^:]+:","");
 			logger.trace("File name from args: "+fileName);
 			return fileName;
 		}
 
 		fileName = System.getProperty("log4j.configuration");
 		if (null != fileName) {
+			fileName = fileName.replaceAll("^[^:]+:","");
 			logger.trace("File name from system property log4j.configuration: "+fileName);
 			return fileName;
 		}
@@ -71,19 +76,20 @@ public class ReloadAgent {
 		return fileName;
 	}
 
-	public static void initFile(String args) {
+	public static void initFile(String args) throws Exception {
 		URL url = ReloadAgent.class.getClassLoader().getResource(getFileName());
-		if (!url.getProtocol().equalsIgnoreCase("file")) {
-			throw new IllegalArgumentException("Can't watch "+url.toString()+". Not a file.");
+		file = new File(url.getFile());
+
+		if (!file.exists()) {
+			throw new IllegalArgumentException(file+" does not exist.");
 		}
 
-		file = new File(url.getFile());
+		logger.info("Watching: "+file);
 	}
 
-	public static void premain(String args, Instrumentation instrumentation) {
+	public static void premain(String args, Instrumentation instrumentation) throws Exception {
 		initArgs(args);
 		initFile(args);
-		logger.info("Watching "+file);
 
 		PropertyConfigurator.configureAndWatch(file.getAbsolutePath(), 5000L);
 

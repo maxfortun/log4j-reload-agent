@@ -54,7 +54,10 @@ tasks {
 	}
 
 	test {
-		jvmArgs("-javaagent:${layout.buildDirectory.get()}/libs/${rootProject.name}-${rootProject.version}.jar")
+		jvmArgs(
+			// "-javaagent:${layout.buildDirectory.get()}/libs/${rootProject.name}-${rootProject.version}.jar"
+			"-javaagent:${layout.buildDirectory.get()}/libs/${rootProject.name}-${rootProject.version}.jar=file=file:../test/log4j.properties"
+		)
 	}
 }
 
