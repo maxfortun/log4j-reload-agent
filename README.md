@@ -6,7 +6,7 @@ I say it is what it is.
 
 Yes, log4j 1 may be an anachronism, but it is a rather ubiquitous one. It is present in multitude of opensource projects, and just because it is [EOL](https://en.wikipedia.org/wiki/End-of-life_product), doesn't mean it is not relevant. Thus, here we are.  
 
-When running any such project that still uses log4j 1, sometimes, for troubleshooting, all we want is to change the log level w/o restarting the app. One way to achieve this is to invasively change the code and add the logic to apply log4j configuration changes directly to the app. Another, non-invasive method is to use a [java agent](https://www.jrebel.com/blog/how-write-javaagent). This is the very agent that does exactly that.  
+When running any such project that still uses log4j 1, sometimes, for troubleshooting, all we want is to change the log level w/o restarting the app. One way to achieve this is to invasively change the code and add the logic to apply log4j configuration changes directly to the app. Another, a non-invasive method, is to use a [java agent](https://www.jrebel.com/blog/how-write-javaagent). This is the very agent that does exactly that.  
 
 ## Build
 ```
