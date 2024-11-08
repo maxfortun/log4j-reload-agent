@@ -80,7 +80,7 @@ public class ReloadAgent {
 		file = new File(url.getFile());
 	}
 
-	private static void premain(String args, Instrumentation instrumentation) {
+	public static void premain(String args, Instrumentation instrumentation) {
 		initArgs(args);
 		initFile(args);
 		logger.info("Watching "+file);
