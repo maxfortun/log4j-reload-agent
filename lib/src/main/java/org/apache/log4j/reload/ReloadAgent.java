@@ -1,4 +1,4 @@
-package org.apache.log4j;
+package org.apache.log4j.reload;
 
 import java.io.File;
 
@@ -49,8 +49,8 @@ public class ReloadAgent {
 			}
 		});
 
-		logger.trace("Ready. "+countDownLatch.getCount());
 		countDownLatch.countDown();
+		logger.trace("Ready. "+countDownLatch.getCount());
 	}
 
 	public static void await() throws Exception {

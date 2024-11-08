@@ -1,4 +1,4 @@
-package org.apache.log4j;
+package org.apache.log4j.reload;
 
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;

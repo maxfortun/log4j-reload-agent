@@ -44,7 +44,7 @@ tasks {
 			attributes(mapOf(
 				"Implementation-Title" to rootProject.name,
 				"Implementation-Version" to rootProject.version,
-				"Premain-Class" to "org.apache.log4j.ReloadAgent"
+				"Premain-Class" to "org.apache.log4j.reload.ReloadAgent"
 			))
 		}
 	}
