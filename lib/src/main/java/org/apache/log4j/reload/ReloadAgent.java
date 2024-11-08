@@ -76,7 +76,7 @@ public class ReloadAgent {
 		return fileName;
 	}
 
-	public static void initFile(String args) throws Exception {
+	public static void initFile(String stringArgs) throws Exception {
 		URL url = ReloadAgent.class.getClassLoader().getResource(getFileName());
 		file = new File(url.getFile());
 
@@ -87,9 +87,9 @@ public class ReloadAgent {
 		logger.info("Watching: "+file);
 	}
 
-	public static void premain(String args, Instrumentation instrumentation) throws Exception {
-		initArgs(args);
-		initFile(args);
+	private static void premainImpl(String stringArgs, Instrumentation instrumentation) throws Exception {
+		initArgs(stringArgs);
+		initFile(stringArgs);
 
 		PropertyConfigurator.configureAndWatch(file.getAbsolutePath(), 5000L);
 
@@ -111,5 +111,17 @@ public class ReloadAgent {
 		countDownLatch.await();
 		logger.trace("Init complete. "+countDownLatch.getCount());
 	}
+
+	public static void premain(String stringArgs, Instrumentation instrumentation) throws Exception {
+		try {
+			premainImpl(stringArgs, instrumentation);
+		} catch(Exception e) {
+			if(Boolean.parseBoolean(args.get("fail"))) {
+				throw e;
+			}
+			logger.error("Failed to initialize.", e);
+		}
+	}
+
 }
 
