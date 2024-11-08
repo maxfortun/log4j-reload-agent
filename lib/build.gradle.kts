@@ -38,6 +38,10 @@ java {
 	}
 }
 
+task("copyDependencies", Copy::class) {
+    from(configurations.runtimeClasspath).into("dependencies")
+}
+
 tasks {
 	jar {
 		manifest {
