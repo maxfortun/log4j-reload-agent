@@ -7,7 +7,7 @@
  */
 
 base {
-	archivesName.set("log4j-reload-agent")
+	archivesName.set(rootProject.name)
 }
 
 plugins {
