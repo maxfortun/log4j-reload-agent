@@ -17,7 +17,7 @@ public class ReloadAgent {
 	private static CountDownLatch countDownLatch = new CountDownLatch(1);
 
 	static {
-		logger.info("Init latch "+countDownLatch.getCount());
+		logger.trace("Init latch "+countDownLatch.getCount());
 	}
 
 	public static URL getURL() {
@@ -49,14 +49,14 @@ public class ReloadAgent {
 			}
 		});
 
-		logger.debug("Ready. "+countDownLatch.getCount());
+		logger.trace("Ready. "+countDownLatch.getCount());
 		countDownLatch.countDown();
 	}
 
 	public static void await() throws Exception {
-		logger.debug("Waiting for init to complete. " + countDownLatch.getCount());
+		logger.trace("Waiting for init to complete. " + countDownLatch.getCount());
 		countDownLatch.await();
-		logger.debug("Init complete. "+countDownLatch.getCount());
+		logger.trace("Init complete. "+countDownLatch.getCount());
 	}
 
 	public static void premain(String args, Instrumentation instrumentation) {
