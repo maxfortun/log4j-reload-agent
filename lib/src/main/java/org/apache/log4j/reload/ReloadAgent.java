@@ -22,6 +22,7 @@ public class ReloadAgent {
 	private static CountDownLatch countDownLatch = new CountDownLatch(1);
 
 	private static Map<String, String> args = new HashMap<>();
+	private static String fileName = null;
 	private static File file = null;
 
 	static {
@@ -56,41 +57,47 @@ public class ReloadAgent {
 		);
 	}
 
-	private static String getFileName() {
-		String fileName = args.get("file");
+	private static void initFileName() {
+		fileName = args.get("file");
 		if(null != fileName) {
 			fileName = fileName.replaceAll("^[^:]+:","");
 			logger.trace("File name from args: "+fileName);
-			return fileName;
+			return;
 		}
 
 		fileName = System.getProperty("log4j.configuration");
 		if (null != fileName) {
 			fileName = fileName.replaceAll("^[^:]+:","");
 			logger.trace("File name from system property log4j.configuration: "+fileName);
-			return fileName;
+			return;
 		}
 
 		fileName = "log4j.properties";
 		logger.trace("File name from defaults: "+fileName);
-		return fileName;
+		return;
 	}
 
 	public static void initFile(String stringArgs) throws Exception {
-		URL url = ReloadAgent.class.getClassLoader().getResource(getFileName());
-		file = new File(url.getFile());
-
-		if (!file.exists()) {
-			throw new IllegalArgumentException(file+" does not exist.");
+		initFileName();
+		file = new File(fileName);
+		if (file.exists()) {
+			return;
 		}
 
-		logger.info("Watching: "+file);
+		URL url = ReloadAgent.class.getClassLoader().getResource(fileName);
+		file = new File(url.getFile());
+		if (file.exists()) {
+			return;
+		}
+
+		throw new IllegalArgumentException(file+" does not exist.");
 	}
 
 	private static void premainImpl(String stringArgs, Instrumentation instrumentation) throws Exception {
 		initArgs(stringArgs);
 		initFile(stringArgs);
 
+		logger.info("Watching: "+file);
 		PropertyConfigurator.configureAndWatch(file.getAbsolutePath(), 5000L);
 
 		// shutdown log4j (and its monitor thread) on shutdown
