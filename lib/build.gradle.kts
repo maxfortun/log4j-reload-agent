@@ -38,7 +38,7 @@ java {
 	}
 }
 
-task("copyDependencies", Copy::class) {
+tasks.register("copyDependencies", Copy::class) {
     from(configurations.runtimeClasspath).into("dependencies")
 }
 
